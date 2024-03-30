@@ -7,9 +7,11 @@ from loguru import logger
 import multiprocessing
 from settings import num_threads, headless
 
+
 def gen_random_sequence(length):
     random_sequence = ''.join(random.choice(string.ascii_letters) for _ in range(length))
     return random_sequence
+
 
 def complete_first_step(page, now_file):
     page.check('input[type="checkbox"][name="terms"]')
@@ -26,6 +28,10 @@ def submit_file(page, now_file):
     page.click('#receipt_upload')
     page.set_input_files('#receipt_upload', f'/home/vanusha/temp_project/photos/{now_file}')
     time.sleep(5)
+    page.click('css=button[type="button"]')
+    time.sleep(2)
+    page.set_input_files('#receipt_upload', f'/home/vanusha/temp_project/photos/{now_file}')
+    time.sleep(2)
     page.click('css=button[type="button"]')
     time.sleep(2)
     page.set_input_files('#receipt_upload', f'/home/vanusha/temp_project/photos/{now_file}')
