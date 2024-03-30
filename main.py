@@ -15,7 +15,7 @@ def gen_random_sequence(length):
 
 def complete_first_step(page, now_file):
     if windows_mode:
-        time.sleep(15)
+        time.sleep(5)
     page.check('input[type="checkbox"][name="terms"]')
     time.sleep(1)
     page.fill('input[name="mobile"]', '027'+str(random.randint(1000000, 9999999)))
@@ -90,7 +90,6 @@ def runner(mail, my_name, proxies, addresses, names, cities, surnames):
         except TimeoutError:
             logger.warning(f'Процесс {my_name}: Ошибка при заполнение форму, попробую еще раз не удаляя почту')
         else:
-            os.remove(os.path.join('photos', now_file))
             expected_text = 'CONTACT DETAILS'
             try:
                 time.sleep(15)
@@ -98,6 +97,7 @@ def runner(mail, my_name, proxies, addresses, names, cities, surnames):
             except TimeoutError:
                 logger.warning(f'Процесс {my_name}: Ошибка при заполнение форму, попробую еще раз не удаляя почту')
             else:
+                os.remove(os.path.join('photos', now_file))
                 logger.info(f'Процесс {my_name}: Завершил первый этап')
                 complete_second_step(page, mail, addresses, names, cities, surnames)
                 logger.info(f'Процесс {my_name}: Завершил второй этап')
