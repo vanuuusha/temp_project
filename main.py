@@ -38,7 +38,7 @@ def complete_second_step(page, mail, addresses, names, cities, surnames):
     time.sleep(2)
     page.fill('input[name="last_name"]', random.choice(surnames))
     time.sleep(2)
-    page.fill('input[name="email"]', mail.split(':').split(':')[0])
+    page.fill('input[name="email"]', mail.split(':')[0])
     time.sleep(1)
     page.fill('input[name="confirm_email"]', mail.split(':')[0])
     time.sleep(1)
