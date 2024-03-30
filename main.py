@@ -78,7 +78,7 @@ def runner(mail, my_name, proxies, addresses, names, cities, surnames):
         except TimeoutError:
             logger.warning(f'Процесс {my_name}: Ошибка при заполнение форму, попробую еще раз не удаляя почту')
         else:
-            os.remove(f'./photos/{now_file}')
+            os.remove(os.path.join('photos', now_file))
             expected_text = 'CONTACT DETAILS'
             try:
                 time.sleep(15)
@@ -103,15 +103,15 @@ def runner(mail, my_name, proxies, addresses, names, cities, surnames):
 
 
 def add_email(email_to_remove):
-    with open('./output_file.txt', 'a+') as output_file:
+    with open('output_file.txt', 'a+') as output_file:
         output_file.write('\n'+email_to_remove)
 
 
 def remove_processed_emails(email_to_remove):
-    with open('./input_file.txt', 'r') as input_file_read:
+    with open('input_file.txt', 'r') as input_file_read:
         lines = input_file_read.readlines()
 
-    with open('./input_file.txt', 'w') as input_file_write:
+    with open('input_file.txt', 'w') as input_file_write:
         for line in lines:
             email = line.strip().split(':')[0]
             if email not in email_to_remove:
@@ -136,23 +136,23 @@ def complete_all(lines, proxies, addresses, names, cities, surnames):
 
 if __name__ == '__main__':
     lines = True
-    with open('./proxy.txt', 'r') as file:
+    with open('proxy.txt', 'r') as file:
         proxies = file.readlines()
         proxies = [i[:-1].split(':') for i in proxies]
         proxies = [{'host': i[0], 'port': i[1], 'username': i[2], 'password': i[3]} for i in proxies]
-    with open('./address.txt', 'r') as file:
+    with open('address.txt', 'r') as file:
         addresses = file.readlines()
         addresses = [i[:-1] for i in addresses]
-    with open('./names.txt', 'r') as file:
+    with open('names.txt', 'r') as file:
         names = file.readlines()
         names = [i[:-1] for i in names]
     with open('cities.txt', 'r') as file:
         cities = file.readlines()
         cities = [i[:-1] for i in cities]
-    with open('./Surnames.txt', 'r') as file:
+    with open('Surnames.txt', 'r') as file:
         surnames = file.readlines()
         surnames = [i[:-1] for i in surnames]
     while lines:
-        with open('./input_file.txt', 'r') as file:
+        with open('input_file.txt', 'r') as file:
             lines = file.readlines()
         complete_all(lines, proxies, addresses, names, cities, surnames)
