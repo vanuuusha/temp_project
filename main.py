@@ -5,7 +5,7 @@ import random
 import string
 from loguru import logger
 import multiprocessing
-from settings import num_threads, headless
+from settings import num_threads, headless, windows_mode
 
 
 def gen_random_sequence(length):
@@ -14,28 +14,32 @@ def gen_random_sequence(length):
 
 
 def complete_first_step(page, now_file):
+    if windows_mode:
+        time.sleep(15)
     page.check('input[type="checkbox"][name="terms"]')
+    time.sleep(1)
     page.fill('input[name="mobile"]', '027'+str(random.randint(1000000, 9999999)))
+    time.sleep(1)
     page.press('input[name="mobile"]', 'Enter')
+    time.sleep(1)
     page.select_option('select[name="shapes_product"]', value='Other')
+    time.sleep(1)
     page.select_option('select[name="retailer"]', value='Countdown/Woolworths')
+    time.sleep(1)
     page.select_option('select[name="online"]', value='No')
+    time.sleep(1)
     submit_file(page, now_file)
 
 
 def submit_file(page, now_file):
     page.focus('#receipt_upload')
     page.click('#receipt_upload')
-    page.set_input_files('#receipt_upload', f'/home/vanusha/temp_project/photos/{now_file}')
+    page.set_input_files('#receipt_upload', os.path.join('photos', now_file))
     time.sleep(5)
     page.click('css=button[type="button"]')
     time.sleep(2)
-    page.set_input_files('#receipt_upload', f'/home/vanusha/temp_project/photos/{now_file}')
+    page.set_input_files('#receipt_upload', os.path.join('photos', now_file))
     time.sleep(2)
-    page.click('css=button[type="button"]')
-    time.sleep(2)
-    page.set_input_files('#receipt_upload', f'/home/vanusha/temp_project/photos/{now_file}')
-    time.sleep(5)
     page.click('css=button[type="submit"]')
 
 
@@ -65,12 +69,14 @@ def complete_second_step(page, mail, addresses, names, cities, surnames):
 
 def runner(mail, my_name, proxies, addresses, names, cities, surnames):
     proxy = random.choice(proxies)
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=headless, proxy={
             "server": f'{proxy["host"]}:{proxy["port"]}',
             "username": proxy['username'],
             "password": proxy['password']
         })
+        context = browser.new_context()
         page = browser.new_page()
         try:
             page.goto('https://www.shapeswin.com/nz')
