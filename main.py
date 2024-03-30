@@ -40,6 +40,11 @@ def submit_file(page, now_file):
     time.sleep(2)
     page.set_input_files('#receipt_upload', os.path.join('photos', now_file))
     time.sleep(2)
+    time.sleep(5)
+    page.click('css=button[type="button"]')
+    time.sleep(2)
+    page.set_input_files('#receipt_upload', os.path.join('photos', now_file))
+    time.sleep(2)
     page.click('css=button[type="submit"]')
 
 
