@@ -33,7 +33,7 @@ def submit_file(page, now_file):
     page.click('css=button[type="submit"]')
 
 
-def complete_second_step(page, mail):
+def complete_second_step(page, mail, addresses, names, cities, surnames):
     page.fill('input[name="first_name"]', random.choice(names))
     time.sleep(2)
     page.fill('input[name="last_name"]', random.choice(surnames))
@@ -56,7 +56,8 @@ def complete_second_step(page, mail):
     time.sleep(3)
     page.click('css=button[type="submit"]')
 
-def runner(mail, my_name):
+
+def runner(mail, my_name, proxies, addresses, names, cities, surnames):
     proxy = random.choice(proxies)
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=headless, proxy={
@@ -65,8 +66,11 @@ def runner(mail, my_name):
             "password": proxy['password']
         })
         page = browser.new_page()
-
-        page.goto('https://www.shapeswin.com/nz')
+        try:
+            page.goto('https://www.shapeswin.com/nz')
+        except TimeoutError:
+            logger.warning(f'Процесс {my_name}: Сайт не загрузился (проксики косячит)')
+            return
         logger.info(f'Процесс {my_name}: Перешел на сайт')
         try:
             now_file = random.choice([x for x in os.listdir('./photos') if x.endswith('.jpg')])
@@ -83,12 +87,12 @@ def runner(mail, my_name):
                 logger.warning(f'Процесс {my_name}: Ошибка при заполнение форму, попробую еще раз не удаляя почту')
             else:
                 logger.info(f'Процесс {my_name}: Завершил первый этап')
-                complete_second_step(page, mail)
+                complete_second_step(page, mail, addresses, names, cities, surnames)
                 logger.info(f'Процесс {my_name}: Завершил второй этап')
                 remove_processed_emails(mail)
                 add_email(mail)
                 logger.info(f'Процесс {my_name}: Все прошло успешно, почта {mail}')
-                time.sleep(100)
+                time.sleep(15)
                 # expected_text = 'CONGRATS'
                 # try:
                 #     time.sleep(15)
@@ -114,11 +118,11 @@ def remove_processed_emails(email_to_remove):
                 input_file_write.write(line)
 
 
-def complete_all(lines):
+def complete_all(lines, proxies, addresses, names, cities, surnames):
     processes = []
     for line in lines:
         mail = line.strip()
-        process = multiprocessing.Process(target=runner, args=(mail, len(processes)))
+        process = multiprocessing.Process(target=runner, args=(mail, len(processes), proxies, addresses, names, cities, surnames))
         processes.append(process)
         process.start()
 
@@ -151,4 +155,4 @@ if __name__ == '__main__':
     while lines:
         with open('./input_file.txt', 'r') as file:
             lines = file.readlines()
-        complete_all(lines)
+        complete_all(lines, proxies, addresses, names, cities, surnames)

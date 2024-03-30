@@ -1,2 +1,2 @@
-num_threads = 1
-headless = False
+num_threads = 4
+headless = True
